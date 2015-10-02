@@ -1,0 +1,9 @@
+__author__ = 'ks'
+A=input().split()
+maxN = 0
+N = 0
+for i in range(len(A)):
+    if A.count(A[i]) > maxN:
+        maxN = A.count(A[i])
+        N = A[i]
+print(A[i])
