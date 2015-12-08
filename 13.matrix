@@ -1,90 +1,91 @@
-class Matrix:
-    def __init__(self,m,n):
-        A=[]
-        self.m=m
-        self.n=n
-        if self.n>0 and self.m>0 and type(self.n)==int and type(self.m)==int:
-            for x in range(m):
-                A.append([])
-                for y in range(n):
-                    A[x].append(0)
-            self.A=A
-        if type(self.m)!=int or type(self.n)!=int or self.m<=0 or self.n<=0:
-            raise Exception('Ne izdevaysya nad matricey, irod!')
-
-    def __add__(self, other):
-        C=self.A
-        J=self.A
-        K=other.A
-        if self.m==other.m and self.n==other.n:
-            for x in range(self.m):
-                for y in range(self.n):
-                    C[x][y]=J[x][y]+K[x][y]
-            self.C=C
-            return self.C
-        if self.m!=other.m or self.n!=other.n:
-            raise Exception('Chuvak,raznie razmeri')
-    def determinant(self):
-        if self.n==self.m:
-            if self.n==2:
-                self.det=self.C[0][0]*self.C[1][1]-self.C[0][1]*self.C[1][0]
-            if self.n==3:
-                self.det=self.C[0][0]*(self.C[1][1]*self.C[2][2]-self.C[1][2]*self.C[2][1])-self.C[0][1]*(self.C[1][0]*self.C[2][2]-self.C[1][2]*self.C[2][0])+self.C[0][2]*(self.C[1][0]*self.C[2][1]-self.C[1][1]*self.C[2][0])
-        if self.n!=self.m or self.n>3:
-            raise Exception()
-            print('Ne mogu!')
-    def __eq__(self,other):
-        t=0
-        if self.m==other.m and self.n==other.n:
-            t=1
-            for x in range(self.m):
-                for y in range(self.n):
-                    if self.A[x][y]!=other.A[x][y]:
-                        t=0
-                        break
-        if t==0:
-            return False
-        else:
-            return True
+class Matrix():
+    a=[]
+    def __init__(self, m, n=None):
+            if type(n) == int and type(m)==int and m>0 and n>0 :
+                self.a=[[0]*n for i in range(m)]
+            elif type(m)==list and n==None :
+                self.a=m
+            else:
+                raise ValueError
+            print('')
     def get(self,i,j):
-        return self.A[i][j]
+        return self.a[i][j]
     def get_m(self):
-        return self.m
+        return len(self.a)
     def get_n(self):
-        return self.n
+        return len(self.a[0])
     def get_size(self):
-        return self.m,self.n
-    def __mul__(self,other):
-        for x in range(self.n):
-            for y in range(self.m):
-                self.A[x][y]=self.A[x][y]*other
-        return self.A
-    #Umnozhenie FIXME!
-    def set(self,i,j,value):
-        self.A[i][j]=value
+        return (len(self.a),len(self.a[0]))
+    def set(self,i,j,v):
+        self.a[i][j]=v
+        return self
+    def __eq__(self, other):
+        k=True
+        if len(self.a)!=len(other.a) or len(self.a[0])!=len(other.a[0]):
+            raise RuntimeError
+        else:
+             for i in range(len(self.a)):
+                for j in range(len (self.a[0])):
+                    if self.a[i][j]!=other.a[i][j]:
+                        k=False
+        return k
+    def __add__(self, other):
+        b=Matrix(len(self.a),len (self.a[0]))
+        for i in range(len(self.a)):
+            for j in range(len (self.a[0])):
+                 b.a[i][j]=self.a[i][j]+other.a[i][j]
+        return b
+    def  transpose(self):
+        b=Matrix(len (self.a[0]),len(self.a))
+        for i in range(len(self.a)):
+            for j in range(len (self.a[0])):
+                  b.a[j][i]= self.a[i][j]
+        return b
     def __sub__(self, other):
-        P=self.A
-        B=self.A
-        U=other.A
-        if self.m==other.m and self.n==other.n:
-            for x in range(self.m):
-                for y in range(self.n):
-                    P[x][y]=B[x][y]-U[x][y]
-        self.P=P
-        return self.P
-    def transpose(self):
-        H=[]
-        for x in range(self.n):
-            H.append([])
-            for y in range(self.m):
-                H[self.n].append(self.A[x][y])
-        self.H=H
-        return H
-    def __truediv__(self,other):
-        for x in range(self.m):
-            for y in range(self.n):
-                self.A[x][y]=self.A[x][y]/other
-        return self.A
-A=Matrix(3,3)
-B=Matrix(3,3)
-print(A+B)
+        b=Matrix(len(self.a),len (self.a[0]))
+        for i in range(len(self.a)):
+            for j in range(len (self.a[0])):
+                 b.a[i][j]=self.a[i][j]-other.a[i][j]
+        return(b)
+    def __mul__(self, other):
+        b=Matrix(len(self.a),len (self.a[0]))
+        if type(other)==Matrix and len(self.a[0])==len(other.a):
+            b=Matrix(len(self.a),len (other.a[0]))
+            for i in range(len(self.a)):
+                 for j in range(len(other.a[0])):
+                    for k in range (len(other.a)):
+                        b.a[i][j]+=other.a[k][j]*self.a[i][k]
+
+        elif type(other)==int or type(other)==float:
+            for i in range(len(self.a)):
+                 for j in range(len (self.a[0])):
+                    b.a[i][j]=self.a[i][j]*other
+        else:
+            raise RuntimeError
+        return b
+    def __truediv__(self, other):
+        b=Matrix(len(self.a),len (self.a[0]))
+        for i in range(len(self.a)):
+            for j in range(len (self.a[0])):
+                 b.a[i][j]=self.a[i][j]/other
+        return b
+    def determinant(self):
+        b=0
+        if len(self.a)==len(self.a[0]):
+            if len(self.a)==2:
+                b=self.a[0][0]*self.a[1][1]-self.a[1][0]*self.a[0][1]
+            if len(self.a)==3:
+                  b=self.a[0][0]*self.a[1][1]*self.a[2][2]+self.a[0][1]*self.a[1][2]*self.a[2][0]+self.a[0][2]*self.a[1][0]*self.a[2][1]
+                  b+=-self.a[0][2]*self.a[1][1]*self.a[2][0]-self.a[2][1]*self.a[1][2]*self.a[0][0]-self.a[2][2]*self.a[1][0]*self.a[0][1]
+        else:
+            raise RuntimeError
+        return b
+    def invert(self):
+        if len(self.a)==len(self.a[0]):
+            b=Matrix(len(self.a),len (self.a[0]))
+            if len(self.a)==2:
+                b.a[0][0]=-1*self.a[1][1]
+                b.a[1][0]=1*self.a[1][0]
+                b.a[0][1]=1*self.a[0][1]
+                b.a[1][1]=-1*self.a[0][0]
+        return b
